@@ -8,7 +8,7 @@ st.set_page_config(
     layout="centered" 
 )
 
-# --- CUSTOM CSS: ปรับ UI ให้พรีเมียมและ Friendly ---
+# --- CUSTOM CSS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap');
@@ -18,7 +18,6 @@ st.markdown("""
         background-color: #fcfcfc;
     }
 
-    /* ตกแต่งส่วนหัวให้ดูเด่น */
     .header-container {
         text-align: center;
         padding: 20px;
@@ -28,7 +27,6 @@ st.markdown("""
         margin-bottom: 25px;
     }
 
-    /* ปรับแต่ง Metric Card */
     div[data-testid="stMetric"] {
         background-color: #ffffff;
         border: 1px solid #eee;
@@ -40,7 +38,6 @@ st.markdown("""
     .main-title { color: #1E3A8A; font-weight: 600; margin-bottom: 5px; }
     .sub-title { color: #666; font-size: 1rem; }
     
-    /* ซ่อนขีดข้าง Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     </style>
@@ -54,7 +51,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- SECTION 1: INPUTS (Friendly Tone) ---
+# --- SECTION 1: INPUTS ---
 st.markdown("### 💰 กระเป๋าตังค์ตอนนี้")
 col_in1, col_in2 = st.columns(2)
 with col_in1:
@@ -77,9 +74,9 @@ if income > 0:
     total_debt = pay_per_month + existing_debt
     debt_ratio = (total_debt / income)
     savings_goal = income * 0.20
-    leftover = income - total_debt - savings_goal
+    leftover = max(0, income - total_debt - savings_goal)
 
-    # --- SECTION 2: RESULTS (Metrics) ---
+    # --- SECTION 2: RESULTS ---
     st.markdown("### ✨ สรุปยอดออกมาแล้ว!")
     m_col1, m_col2 = st.columns(2)
     with m_col1:
@@ -91,7 +88,7 @@ if income > 0:
     with m_col3:
         st.metric("สัดส่วนหนี้ต่อรายได้", f"{debt_ratio:.1%}")
     with m_col4:
-        st.metric("เงินเหลือไว้กินช้อป", f"{max(0, leftover):,.0f} ฿")
+        st.metric("เงินเหลือไว้กินช้อป", f"{leftover:,.0f} ฿")
 
     # --- SECTION 3: STATUS & ADVICE ---
     st.write("")
@@ -102,12 +99,28 @@ if income > 0:
     else:
         st.error("🚨 **สถานะ: พักก่อน! ตึงมือไปหน่อย**\n\nยอดผ่อนสูงเกิน 20% ของรายได้ ลองเพิ่มเดือนผ่อนดูนะ")
 
-    # --- SECTION 4: VISUALIZATION (ใช้ Bar Chart มาตรฐานเพื่อความชัวร์) ---
+    # --- SECTION 4: VISUALIZATION (ปรับปรุงให้แสดง % และ จำนวนเงิน) ---
     st.write("")
     with st.expander("📊 เปิดดูภาพรวมเงินในกระเป๋า", expanded=True):
+        # เตรียมข้อมูล
+        categories = ['ยอดผ่อนรวม', 'เงินออม (20%)', 'เงินใช้จ่าย']
+        amounts = [total_debt, savings_goal, leftover]
+        percentages = [(val / income) * 100 for val in amounts]
+        
+        # สร้าง DataFrame สำหรับแสดงผลแบบตารางคู่กับกราฟ
+        display_df = pd.DataFrame({
+            'รายการ': categories,
+            'จำนวนเงิน (บาท)': [f"{x:,.0f}" for x in amounts],
+            'สัดส่วน (%)': [f"{x:.1f}%" for x in percentages]
+        })
+        
+        # แสดงตารางสรุปแบบสวยงามก่อนกราฟ
+        st.table(display_df.set_index('รายการ'))
+        
+        # แสดงกราฟแท่งแนวนอนเพื่อให้เห็นสัดส่วนชัดเจน
         chart_data = pd.DataFrame({
-            'จำนวนเงิน (฿)': [total_debt, savings_goal, max(0, leftover)]
-        }, index=['ยอดผ่อนรวม', 'เงินออม (20%)', 'เงินใช้จ่าย'])
+            'จำนวนเงิน (บาท)': amounts
+        }, index=categories)
         
         st.bar_chart(chart_data)
 
