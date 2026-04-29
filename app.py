@@ -1,29 +1,3 @@
-from streamlit_gsheets import GSheetsConnection
-
-# ฟังก์ชันกลางสำหรับบันทึกข้อมูลแบบเงียบ (Silent Logger)
-def silent_log(data_type, payload=None):
-    try:
-        conn = st.connection("gsheets", type=GSheetsConnection)
-        
-        # เลือก Worksheet ตามประเภทกิจกรรม
-        sheet_name = "visits" if data_type == "visit" else "calculations"
-        
-        # ดึงข้อมูลเดิม
-        df = conn.read(worksheet=sheet_name).dropna(how="all")
-        
-        # เตรียม Data ใหม่
-        new_entry = {"Timestamp": pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")}
-        if payload:
-            new_entry.update(payload)
-            new_entry["Event_Type"] = "Calculation"
-        else:
-            new_entry["Event_Type"] = "Visit"
-            
-        # รวมและอัปเดต
-        updated_df = pd.concat([df, pd.DataFrame([new_entry])], ignore_index=True)
-        conn.update(worksheet=sheet_name, data=updated_df)
-    except:
-        pass # ปล่อยผ่านหากบันทึกไม่ได้ เพื่อไม่ให้หน้าเว็บค้างหรือแสดง Error
 
 import streamlit as st
 import pandas as pd
