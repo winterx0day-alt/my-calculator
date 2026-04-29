@@ -1,3 +1,67 @@
+import streamlit as st
+import pandas as pd
+
+# --- CONFIGURATION ---
+st.set_page_config(
+    page_title="Installment Calculator",
+    page_icon="💳",
+    layout="centered"  # ใช้แบบ Centered จะดูสวยและเป็นระเบียบกว่าบนมือถือ
+)
+
+# --- CUSTOM CSS FOR CLEAN & PREMIUM LOOK ---
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Sarabun', sans-serif;
+        background-color: #fcfcfc;
+    }
+
+    /* Container ปรับแต่งให้ดูเหมือน App มือถือ */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        max-width: 600px; /* จำกัดความกว้างให้ดูดีทั้งบน Desktop และ Mobile */
+    }
+
+    /* ตกแต่ง Card ผลลัพธ์ */
+    .stMetric {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border: 1px solid #f0f0f0;
+    }
+
+    /* หัวข้อใหญ่ */
+    .main-title {
+        text-align: center;
+        color: #1a1a1a;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .sub-title {
+        text-align: center;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+    }
+
+    /* ส่วน Input Area */
+    .input-section {
+        background-color: #f1f3f6;
+        padding: 20px;
+        border-radius: 20px;
+        margin-bottom: 25px;
+    }
+    
+    /* ซ่อนขีดข้าง Streamlit */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style>
+    """, unsafe_allow_html=True)
+
 # --- HEADER ---
 st.markdown('<h1 class="main-title">💸 น้องช่วยคิด.. ผ่อนไหวไหม?</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">เช็กให้ชัวร์ก่อนรูด จะได้มีเงินเก็บเหลือๆ ไม่ตึงมือ</p>', unsafe_allow_html=True)
