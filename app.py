@@ -99,30 +99,27 @@ if income > 0:
     else:
         st.error("🚨 **สถานะ: พักก่อน! ตึงมือไปหน่อย**\n\nยอดผ่อนสูงเกิน 20% ของรายได้ ลองเพิ่มเดือนผ่อนดูนะ")
 
-    # --- SECTION 4: VISUALIZATION (ปรับปรุงให้แสดง % และ จำนวนเงิน) ---
+    # --- SECTION 4: VISUALIZATION (แสดง % และ จำนวนเงินในกราฟสีแยกกัน) ---
     st.write("")
     with st.expander("📊 เปิดดูภาพรวมเงินในกระเป๋า", expanded=True):
-        # เตรียมข้อมูล
-        categories = ['ยอดผ่อนรวม', 'เงินออม (20%)', 'เงินใช้จ่าย']
-        amounts = [total_debt, savings_goal, leftover]
-        percentages = [(val / income) * 100 for val in amounts]
+        # คำนวณเปอร์เซ็นต์
+        p_debt = (total_debt / income) * 100
+        p_save = (savings_goal / income) * 100
+        p_spend = (leftover / income) * 100
+
+        # เตรียมข้อมูลสำหรับกราฟ โดยใส่ค่า % และ จำนวนเงินไว้ที่ชื่อ Label เลย
+        data = {
+            f'ยอดผ่อนรวม ({p_debt:.1f}% | {total_debt:,.0f} ฿)': [total_debt, 0, 0],
+            f'เงินออม 20% ({p_save:.1f}% | {savings_goal:,.0f} ฿)': [0, savings_goal, 0],
+            f'เงินกินช้อป ({p_spend:.1f}% | {leftover:,.0f} ฿)': [0, 0, leftover]
+        }
         
-        # สร้าง DataFrame สำหรับแสดงผลแบบตารางคู่กับกราฟ
-        display_df = pd.DataFrame({
-            'รายการ': categories,
-            'จำนวนเงิน (บาท)': [f"{x:,.0f}" for x in amounts],
-            'สัดส่วน (%)': [f"{x:.1f}%" for x in percentages]
-        })
+        chart_df = pd.DataFrame(data, index=['ผ่อน', 'ออม', 'ใช้จ่าย'])
         
-        # แสดงตารางสรุปแบบสวยงามก่อนกราฟ
-        st.table(display_df.set_index('รายการ'))
-        
-        # แสดงกราฟแท่งแนวนอนเพื่อให้เห็นสัดส่วนชัดเจน
-        chart_data = pd.DataFrame({
-            'จำนวนเงิน (บาท)': amounts
-        }, index=categories)
-        
-        st.bar_chart(chart_data)
+        # แสดงกราฟแท่งแบบแยกสีชัดเจน
+        # Streamlit จะดึงสีที่แตกต่างกันให้โดยอัตโนมัติเมื่อข้อมูลอยู่คนละ Column
+        st.bar_chart(chart_df)
+        st.caption("💡 กราฟแสดงสัดส่วนเงินแต่ละก้อนเทียบกับรายได้ทั้งหมดของคุณ")
 
 else:
     st.info("👆 รบกวนกรอกรายได้ก่อนน้า น้องจะได้ช่วยคำนวณให้จ้า")
