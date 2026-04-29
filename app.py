@@ -55,7 +55,7 @@ st.markdown("""
 st.markdown("### 💰 กระเป๋าตังค์ตอนนี้")
 col_in1, col_in2 = st.columns(2)
 with col_in1:
-    income = st.number_input("รายได้เฉลี่ย/เดือน (บาท)", min_value=0, value=30000, step=1000)
+    income = st.number_input("รายได้เฉลี่ย/เดือน (บาท)", min_value=0, value=20000, step=1000)
 with col_in2:
     existing_debt = st.number_input("ยอดที่ผ่อนอยู่อื่นๆ (บาท)", min_value=0, value=0, step=100)
 
